@@ -1,0 +1,85 @@
+﻿@model IEnumerable<Blog.Models.Article>
+
+@{
+    ViewData["Title"] = "Blog";
+
+    string? authorEmail = null;
+    int CurrentPage;
+    int TotalPages;
+    // DateTimeOffset? startDate = null;
+    // DateTimeOffset? endDate = null;
+}
+
+<h1 style="color:#e7e9ea">For you</h1>
+@* 
+<form class="row row-cols-lg-auto g-3 align-items-center" asp-action="Index" method="get">
+    <div class="col-12">
+        <label class="visually-hidden"
+               asp-for="@startDate">Start date</label>
+        <input class="form-control"
+               type="date" asp-for="@startDate" />
+    </div>
+    <div class="col-12">
+        <label class="visually-hidden"
+               asp-for="@endDate">End date</label>
+        <input class="form-control"
+               type="date" asp-for="@endDate" />
+    </div>
+    <div class="col-12">
+        <button class="btn btn-primary" type="submit">Filter</button>
+    </div>
+</form> *@
+
+<div class="post-container">
+    @foreach (var article in Model)
+    {
+        <a asp-controller="Articles" asp-action="Details" asp-route-id="@article.Id" class="list-group-item"
+           style=" align-items:center; justify-content:center; border:solid #e7e9ea 1px;">
+            <h5 style="color:#e7e9ea">@article.Title</h5>
+            <div style="color:#e7e9ea">@article.AuthorName</div>
+            <small style="color:#e7e9ea">Published:@article.PublishedDate</small>
+        </a>
+    }
+</div>
+
+
+<div class="pagination-container" >
+    <div class="row">
+        <div class="col-4 text-start" style="padding-left:20px;">
+           &copy; 2025 - Blog
+        </div>
+        <div class="col-8 " style="padding-left:45px;">
+            <nav>
+                <ul class="pagination ">
+
+                    <!-- Botón "Anterior" -->
+                    <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+                        <a href="?page=@(ViewBag.CurrentPage - 1)"
+                           style="color:#1d9bf0; ">
+                            &laquo; Anterior
+                        </a>
+                    </li>
+
+                    <!-- Número actual -->
+                    <li class="page-item active" aria-current="page">
+                        <span style="color:#e7e9ea; margin-left:10px; margin-right:10px;">
+                            Página @ViewBag.CurrentPage de @ViewBag.TotalPages
+                        </span>
+                    </li>
+
+                    <!-- Botón "Siguiente" -->
+                    <li class="page-item @(ViewBag.CurrentPage >= ViewBag.TotalPages ? "disabled" : "")">
+                        <a href="?page=@(ViewBag.CurrentPage + 1)"
+                           style="color:#1d9bf0;">
+                            Siguiente &raquo;
+                        </a>
+                    </li>
+
+                </ul>
+            </nav>
+        </div>
+       
+
+    </div>
+    
+</div>

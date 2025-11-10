@@ -1,0 +1,33 @@
+﻿@model Blog.Models.Article
+@{
+    ViewData["Title"] = "Create Article";
+}
+
+<h1>Create Article</h1>
+
+<form asp-action="Create" method="post" style="padding: 30px; border-radius:40px; box-shadow: 11px 9px 36px 2px rgba(0,0,0,0.69);">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div class="form-group">
+        <label asp-for="Title" class="control-label"></label>
+        <input asp-for="Title" class="form-control" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+    @* <div class="form-group">
+        <label asp-for="AuthorName" class="control-label"></label>
+        <input asp-for="AuthorName" class="form-control" />
+        <span asp-validation-for="AuthorName" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="AuthorEmail" class="control-label"></label>
+        <input asp-for="AuthorEmail" class="form-control" />
+        <span asp-validation-for="AuthorEmail" class="text-danger"></span>
+    </div> *@
+    <div class="form-group" style="margin-bottom:20px;">
+        <label asp-for="Content" class="control-label"></label>
+        <textarea asp-for="Content" class="form-control"></textarea>
+        <span asp-validation-for="Content" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Create" class="btn btn-primary" />
+	</div>
+</form>

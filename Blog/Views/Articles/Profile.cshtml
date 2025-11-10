@@ -1,0 +1,15 @@
+﻿@model Blog.Models.User
+@{
+    ViewData["Title"] = "Create Article";
+}
+
+<div class="text-center" style="border:solid; border-radius:50px; box-shadow: 10px 10px 21px 5px rgba(0,0,0,0.75); -webkit-box-shadow: 10px 10px 21px 5px rgba(0,0,0,0.75); -moz-box-shadow: 10px 10px 21px 5px rgba(0,0,0,0.75); background-color:#F7F5F5">
+    <h1>User profile: </h1>
+    <div>@Model.Username</div>
+    <div>@Model.Email</div>
+    <div>@Model.DateOfBirth</div>
+</div>
+
+<a asp-controller="Articles" asp-action="Logout" class="btn btn-danger text-end">
+    Cerrar sesión
+</a>

@@ -1,0 +1,66 @@
+﻿@model Blog.Models.ArticleDetailsViewModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1 style="color:#e7e9ea;">Details</h1>
+<br />
+
+<div background-color:#000000 padding:30px; margin-bottom:20px;">
+
+	<div style="margin-bottom:10px;">
+		<div style="font-size:12px; color:#e7e9ea;">@Model.Article.AuthorName</div>
+		<h2 style="color:#e7e9ea;">@Model.Article.Title</h2>
+		<p style="overflow: hidden; word-wrap: break-word;color:#e7e9ea;">@Model.Article.Content</p>
+
+		<span style="font-size:12px; color:#e7e9ea;">@Model.Article.AuthorEmail</span>
+		<span style="font-size:12px; color:#e7e9ea;">@Model.Article.PublishedDate</span>
+	</div>
+	<hr style="background-color:#e7e9ea">
+	<div>
+		<h4 style="color:#e7e9ea;">Comments</h4>
+        <div>
+            @foreach (var comment in Model.Comments)
+            {
+				<div class="list-group-item" style="padding:10px; background-color:#000000; border:solid #e7e9ea 1px;">
+					<div style="color:#e7e9ea;">@comment.Content</div>
+					<div style="display:flex; justify-content:flex-end; font-size:10px; color:#e7e9ea;">@comment.PublishedDate</div>
+                </div>
+            }
+        </div>
+		<div style=" display:flex; justify-content:flex-end; margin-top:20px;"><button id="showCommentFormBtn" class="text-dark text-end btn" style="border-radius:20px; background-color:#1d9bf0;"><span style="font-weight: bold; color:#e7e9ea;">+ New Comment</span></button></div>
+
+		<form id="commentForm" asp-controller="Articles" asp-action="AddComment" asp-route-articleId="@Model.Article.Id" style="display: none; margin-top:20px;">
+			<div style="padding:10px;">
+				<label for="commentContent" style="color:#e7e9ea">Your Comment</label>
+				<textarea class="form-control" name="Content" style="color:#e7e9ea; background-color:#000000;"></textarea>
+			</div>
+			<div style="display:flex; justify-content:flex-end;">
+				<button type="submit" class="btn mt-2" style="background-color:#1d9bf0; margin-right:5px;"><span style="color:#e7e9ea;font-weight: bold;">Add Comment</span></button>
+				<button type="button" id="cancelCommentBtn" class="btn btn-danger mt-2"><span style="color:#e7e9ea;font-weight: bold;">Cancel</span></button>
+			</div>
+			
+
+		</form>
+	</div>
+
+
+	@section Scripts 
+	{
+		<script>
+			document.getElementById('showCommentFormBtn').addEventListener('click', function() {
+				var form = document.getElementById('commentForm');
+				form.style.display = form.style.display === 'none' ? 'block' : 'none';
+			});
+				document.getElementById('cancelCommentBtn').addEventListener('click', function() {
+				var form = document.getElementById('commentForm');
+				form.style.display = 'none';
+			});
+		</script>
+	}
+
+</div>
+
+
+

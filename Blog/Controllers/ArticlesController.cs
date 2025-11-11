@@ -1,5 +1,6 @@
 ﻿using Blog.Data;
 using Blog.Models;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -118,7 +119,7 @@ namespace Blog.Controllers
                 return Forbid();
             }
 
-            if(DateTime.Now > existingArticle.PublishedDate.AddMinutes(5))
+            if (DateTime.Now > existingArticle.PublishedDate.AddMinutes(5))
             {
                 return RedirectToAction(nameof(Details), new { id = existingArticle.Id });
             }
@@ -162,6 +163,51 @@ namespace Blog.Controllers
             var user = await _articleRepository.GetUserById(sessionUserId);
             return View(user);
         }
+
+
+        [HttpGet]
+        public IActionResult LoginWithGitHub(string returnUrl = "/")
+        {
+            var properties = new AuthenticationProperties
+            {
+                RedirectUri = Url.Action(nameof(GitHubCallback), new { returnUrl })
+            };
+            return Challenge(properties, "GitHub");
+        }
+
+        // Callback de GitHub
+        [HttpGet]
+        public async Task<IActionResult> GitHubCallback(string returnUrl = "/")
+        {
+            var info = await _signInManager.GetExternalLoginInfoAsync();
+            if (info == null) return RedirectToAction("Index", "Articles");
+
+            // Intentar iniciar sesión si ya existe
+            var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
+            if (result.Succeeded) return LocalRedirect(returnUrl);
+
+            // Si no existe, crear el usuario
+            var username = info.Principal.FindFirstValue(ClaimTypes.Name);
+            var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+            var user = new IdentityUser { UserName = username, Email = email };
+
+            var createResult = await _userManager.CreateAsync(user);
+            if (createResult.Succeeded)
+            {
+                await _userManager.AddLoginAsync(user, info);
+                await _signInManager.SignInAsync(user, isPersistent: false);
+                return LocalRedirect(returnUrl);
+            }
+
+            return RedirectToAction("Index", "Articles");
+        }
+
+        //[HttpPost]
+        //public async Task<IActionResult> Logout()
+        //{
+        //    await _signInManager.SignOutAsync();
+        //    return RedirectToAction("Index", "Articles");
+        //}
 
     }
 }

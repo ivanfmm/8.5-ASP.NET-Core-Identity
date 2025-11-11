@@ -1,6 +1,11 @@
 using Blog.Data;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
+using System.Text.Json;
 
 namespace Blog
 {
@@ -26,6 +31,48 @@ namespace Blog
                 options.Password.RequiredLength = 6;
             })
         .AddEntityFrameworkStores<ArticleContext>().AddDefaultUI();
+
+
+
+            builder.Services.AddAuthentication()
+            .AddOAuth("GitHub", options =>
+            {
+                options.ClientId = builder.Configuration["Authentication:GitHub:ClientId"];
+                options.ClientSecret = builder.Configuration["Authentication:GitHub:ClientSecret"];
+                options.CallbackPath = new PathString("/Identity/Account/ExternalLoginCallback");
+
+                // URLs de GitHub para OAuth
+                options.AuthorizationEndpoint = "https://github.com/login/oauth/authorize";
+                options.TokenEndpoint = "https://github.com/login/oauth/access_token";
+                options.UserInformationEndpoint = "https://api.github.com/user";
+
+                options.AuthorizationEndpoint = "https://github.com/login/oauth/authorize";
+                options.TokenEndpoint = "https://github.com/login/oauth/access_token";
+                options.UserInformationEndpoint = "https://api.github.com/user";
+
+                options.Scope.Add("user:email");
+
+                // Mapear los datos del usuario a Claims
+                options.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "id");
+                options.ClaimActions.MapJsonKey(ClaimTypes.Name, "login"); // username
+                options.ClaimActions.MapJsonKey(ClaimTypes.Email, "email");
+
+                options.Events = new OAuthEvents
+                {
+                    OnCreatingTicket = async context =>
+                    {
+                        var request = new HttpRequestMessage(HttpMethod.Get, context.Options.UserInformationEndpoint);
+                        request.Headers.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+                        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", context.AccessToken);
+
+                        var response = await context.Backchannel.SendAsync(request);
+                        response.EnsureSuccessStatusCode();
+
+                        var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+                        context.RunClaimActions(json.RootElement);
+                    }
+                };
+            });
 
             builder.Services.ConfigureApplicationCookie(options =>
             {
@@ -58,11 +105,12 @@ namespace Blog
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.MapRazorPages();
+
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Articles}/{action=Index}/{id?}");
 
-            app.MapRazorPages();
             app.Run();
         }
     }

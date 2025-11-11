@@ -112,8 +112,20 @@ namespace Blog.Controllers
             {
                 return NotFound();
             }
+            var userId = User.FindFirstValue(ClaimTypes.Name);
+            if (existingArticle.AuthorName != userId)
+            {
+                return Forbid();
+            }
+
+            if(DateTime.Now > existingArticle.PublishedDate.AddMinutes(5))
+            {
+                return RedirectToAction(nameof(Details), new { id = existingArticle.Id });
+            }
+
             existingArticle.Title = updatedArticle.Title;
             existingArticle.Content = updatedArticle.Content;
+            existingArticle.edit = true;
             await _articleRepository.Update(existingArticle);
             return RedirectToAction(nameof(Details), new { id = existingArticle.Id });
         }

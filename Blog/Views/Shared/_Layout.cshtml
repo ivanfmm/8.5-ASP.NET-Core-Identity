@@ -32,6 +32,14 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark nav-button" asp-area="" asp-controller="Articles" asp-action="Create" style="background-color:#1d9bf0; border-radius: 20%;"><i class="bi bi-plus-circle-fill text-white"></i></a>
                         </li>
+
+                            <li class="nav-item">
+                                @await Html.PartialAsync("_LoginPartial")
+                            </li>
+                            @* <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Register</a>
+                            </li> *@
+
                     </ul>
                 </div>
             </div>

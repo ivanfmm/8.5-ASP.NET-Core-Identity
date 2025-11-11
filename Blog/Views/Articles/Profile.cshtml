@@ -1,15 +1,14 @@
-﻿@model Blog.Models.User
+﻿@model Microsoft.AspNetCore.Identity.IdentityUser
 @{
     ViewData["Title"] = "Create Article";
 }
 
-<div class="text-center" style="border:solid; border-radius:50px; box-shadow: 10px 10px 21px 5px rgba(0,0,0,0.75); -webkit-box-shadow: 10px 10px 21px 5px rgba(0,0,0,0.75); -moz-box-shadow: 10px 10px 21px 5px rgba(0,0,0,0.75); background-color:#F7F5F5">
-    <h1>User profile: </h1>
-    <div>@Model.Username</div>
-    <div>@Model.Email</div>
-    <div>@Model.DateOfBirth</div>
+<div class="text-center" style="border:solid; border-radius:50px; background-color:#000000">
+    <h1 style="color:#e7e9ea">User profile: </h1>
+    <div style="color:#e7e9ea">@Model.UserName</div>
+    <div style="color:#e7e9ea">@Model.Email</div>
 </div>
 
-<a asp-controller="Articles" asp-action="Logout" class="btn btn-danger text-end">
-    Cerrar sesión
-</a>
+<form asp-area="Article" asp-action="Logout" method="post" id="logoutForm">
+    <button type="submit" class="nav-link btn btn-link">Logout</button>
+</form>

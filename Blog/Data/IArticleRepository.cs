@@ -1,4 +1,5 @@
 ﻿using Blog.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace Blog.Data
 {
@@ -57,8 +58,8 @@ namespace Blog.Data
         /// </remarks>
         /// <param name="comment">The comment to add. This parameter cannot be null.</param>
         Task AddComment(Comment comment);
-        public Task<User> CreateUser(User user);
-        public Task<User?> GetUserByUsername(string username);
-        public Task<User?> GetUserById(int userID);
+        public Task<IdentityUser?> CreateUser(string username, string email, string password);
+        public Task<IdentityUser?> GetUserByUsername(string username);
+        public Task<IdentityUser?> GetUserById(string userID);
     }
 }

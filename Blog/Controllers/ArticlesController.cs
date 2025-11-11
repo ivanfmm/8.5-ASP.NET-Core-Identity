@@ -1,12 +1,12 @@
 ﻿using Blog.Data;
 using Blog.Models;
-using Blog.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualBasic;
-using System.Security.Cryptography;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 
 namespace Blog.Controllers
@@ -14,12 +14,22 @@ namespace Blog.Controllers
     public class ArticlesController : Controller
     {
         private IArticleRepository _articleRepository;
-        private IUserService _userService;
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly SignInManager<IdentityUser> _signInManager;
 
-        public ArticlesController(IArticleRepository articleRepository, IUserService userService) //constructor del controlador, inyeccion de dependencia
+        public ArticlesController(IArticleRepository articleRepository, UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager) 
         {
             _articleRepository = articleRepository;
-            _userService = userService;
+            _userManager = userManager;
+            _signInManager = signInManager;
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("Index", "Articles"); 
         }
 
         // GET: ArticlesController
@@ -71,9 +81,8 @@ namespace Blog.Controllers
             {
                 return View(article);
             }
-            int sessionUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-            User user = await _articleRepository.GetUserById(sessionUserId);
-            article.AuthorName = user.Username;
+            var user = await _userManager.GetUserAsync(User);
+            article.AuthorName = user.UserName;
             article.AuthorEmail = user.Email;
             article.PublishedDate = DateTime.UtcNow;
             Article created = await _articleRepository.Create(article);
@@ -106,12 +115,9 @@ namespace Blog.Controllers
         [Authorize]
         public async Task<ActionResult> Profile()
         {
-            int sessionUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            string sessionUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            Console.WriteLine("Session User ID: " + sessionUserId);
             var user = await _articleRepository.GetUserById(sessionUserId);
-            if (user == null)
-            {
-                return RedirectToAction("Method");
-            }
             return View(user);
         }
 

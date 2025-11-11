@@ -1,5 +1,4 @@
 using Blog.Data;
-using Blog.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,6 +9,7 @@ namespace Blog
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            var connectionString = builder.Configuration.GetConnectionString("DbContextConnection") ?? throw new InvalidOperationException("Connection string 'DbContextConnection' not found.");
 
 
 
@@ -25,13 +25,19 @@ namespace Blog
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequiredLength = 6;
             })
-        .AddEntityFrameworkStores<ArticleContext>();
+        .AddEntityFrameworkStores<ArticleContext>().AddDefaultUI();
+
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Identity/Account/Login";     
+                options.LogoutPath = "/Articles/Index";            
+                options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+            });
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
             builder.Services.AddScoped<IArticleRepository, ArticleRepository>();
-            builder.Services.AddScoped<IUserService, UserService>();
 
             var app = builder.Build();
 
@@ -56,6 +62,7 @@ namespace Blog
                 name: "default",
                 pattern: "{controller=Articles}/{action=Index}/{id?}");
 
+            app.MapRazorPages();
             app.Run();
         }
     }

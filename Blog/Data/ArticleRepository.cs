@@ -1,4 +1,5 @@
 ﻿using Blog.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using System.Drawing.Printing;
@@ -12,10 +13,12 @@ namespace Blog.Data
     public class ArticleRepository : IArticleRepository
     {
         private readonly ArticleContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public ArticleRepository(ArticleContext context)
+        public ArticleRepository(ArticleContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         /// <summary>
@@ -68,21 +71,38 @@ namespace Blog.Data
                 .Where(c => c.ArticleId == articleId)
                 .ToListAsync();
         }
-        public async Task<User> CreateUser(User user)
+        //public async Task<IdentityUser> CreateUser(User user)
+        //{
+        //    await _context.Users.AddAsync(user);
+        //    await _context.SaveChangesAsync(); 
+        //    return user;
+        //}
+
+        public async Task<IdentityUser?> CreateUser(string username, string email, string password)
         {
-            await _context.Users.AddAsync(user);
-            await _context.SaveChangesAsync(); 
-            return user;
+            var user = new IdentityUser
+            {
+                UserName = username,
+                Email = email
+            };
+
+            var result = await _userManager.CreateAsync(user, password); // Crea usuario y hashea la contraseña
+            if (result.Succeeded)
+            {
+                return user;
+            }
+
+            return null; // O manejar errores según result.Errors
         }
 
-        public async Task<User?> GetUserByUsername(string username)
+        public async Task<IdentityUser?> GetUserByUsername(string username)
         {
-            return await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
+            return await _context.Users.FirstOrDefaultAsync(u => u.UserName == username);
         }
 
         
 
-        public async Task<User?> GetUserById(int userId)
+        public async Task<IdentityUser?> GetUserById(string userId)
         {
             return await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
         }

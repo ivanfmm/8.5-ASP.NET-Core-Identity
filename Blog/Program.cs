@@ -1,5 +1,7 @@
 using Blog.Data;
 using Blog.Services;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace Blog
 {
@@ -9,40 +11,38 @@ namespace Blog
         {
             var builder = WebApplication.CreateBuilder(args);
 
+
+
+            //var databaseConfig = builder.Configuration.GetSection("DatabaseConfig").Get<DatabaseConfig>();
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+            //agregamos Identity
+            builder.Services.AddDefaultIdentity<IdentityUser>(options =>
+            {
+                options.SignIn.RequireConfirmedAccount = false;
+                options.Password.RequireDigit = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequiredLength = 6;
+            })
+        .AddEntityFrameworkStores<ApplicationDbContext>();
+
             // Add services to the container.
             builder.Services.AddControllersWithViews();
-
-            var databaseConfig = builder.Configuration.GetSection("DatabaseConfig").Get<DatabaseConfig>();
-            //if (databaseConfig!.UseInMemoryDatabase)
-            //{
-            //    builder.Services.AddSingleton<IArticleRepository, MemoryArticleRepository>();
-            //}
-            //else
-            //{
-            //builder.Services.AddSingleton<IArticleRepository>(services =>
-            //{
-            //    var config = services.GetRequiredService<IConfiguration>();
-            //    var repository = new ArticleRepository(databaseConfig);
-
-            //    repository.EnsureCreated();
-
-            //    return repository;
-            //});
 
             builder.Services.AddScoped<IArticleRepository>(provider =>
             {
                 var config = provider.GetRequiredService<IConfiguration>();
-
-                // Si tienes una clase de configuración de base de datos
                 var repository = new ArticleRepository(databaseConfig);
                 repository.EnsureCreated();
 
                 return repository;
             });
             builder.Services.AddScoped<IUserService, UserService>();
-            //}
 
             var app = builder.Build();
+
+           
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
@@ -56,7 +56,7 @@ namespace Blog
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllerRoute(

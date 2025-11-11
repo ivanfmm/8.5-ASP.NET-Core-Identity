@@ -6,29 +6,10 @@
     string? authorEmail = null;
     int CurrentPage;
     int TotalPages;
-    // DateTimeOffset? startDate = null;
-    // DateTimeOffset? endDate = null;
 }
 
 <h1 style="color:#e7e9ea">For you</h1>
-@* 
-<form class="row row-cols-lg-auto g-3 align-items-center" asp-action="Index" method="get">
-    <div class="col-12">
-        <label class="visually-hidden"
-               asp-for="@startDate">Start date</label>
-        <input class="form-control"
-               type="date" asp-for="@startDate" />
-    </div>
-    <div class="col-12">
-        <label class="visually-hidden"
-               asp-for="@endDate">End date</label>
-        <input class="form-control"
-               type="date" asp-for="@endDate" />
-    </div>
-    <div class="col-12">
-        <button class="btn btn-primary" type="submit">Filter</button>
-    </div>
-</form> *@
+
 
 <div class="post-container">
     @foreach (var article in Model)
@@ -54,7 +35,7 @@
 
                     <!-- Botón "Anterior" -->
                     <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
-                        <a href="?page=@(ViewBag.CurrentPage - 1)"
+                        <a href="@(ViewBag.CurrentPage == 1 ? "#" : $"?page={ViewBag.CurrentPage - 1}")"
                            style="color:#1d9bf0; ">
                             &laquo; Anterior
                         </a>
@@ -69,7 +50,7 @@
 
                     <!-- Botón "Siguiente" -->
                     <li class="page-item @(ViewBag.CurrentPage >= ViewBag.TotalPages ? "disabled" : "")">
-                        <a href="?page=@(ViewBag.CurrentPage + 1)"
+                        <a href="@(ViewBag.CurrentPage >= ViewBag.TotalPages ? "#" : $"?page={ViewBag.CurrentPage + 1}")"
                            style="color:#1d9bf0;">
                             Siguiente &raquo;
                         </a>
@@ -78,8 +59,5 @@
                 </ul>
             </nav>
         </div>
-       
-
     </div>
-    
 </div>

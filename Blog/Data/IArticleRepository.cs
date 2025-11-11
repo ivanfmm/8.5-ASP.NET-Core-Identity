@@ -10,7 +10,7 @@ namespace Blog.Data
         /// <returns>
         /// A collection of articles. If no articles exist, returns an empty collection.
         /// </returns>
-        IEnumerable<Article> GetAll();
+        Task<IEnumerable<Article>> GetAll();
 
         /// <summary>
         /// Retrieves a collection of articles published within the specified date range.
@@ -21,9 +21,9 @@ namespace Blog.Data
         /// <param name="endDate">The end of the date range. Only articles published on or before this date will be included.</param>
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="Article"/> objects representing the articles published within
         /// the specified date range. If no articles are found, the collection will be empty.</returns>
-        public IEnumerable<Article> GetByDateRange(DateTimeOffset startDate, DateTimeOffset endDate, int pageNumber, int pageSize);
+        Task<IEnumerable<Article>> GetByDateRange(DateTimeOffset startDate, DateTimeOffset endDate, int pageNumber, int pageSize);
 
-        public int GetTotalArticles();
+        public Task<int> GetTotalArticles();
 
         /// <summary>
         /// Retrieves an article by its unique identifier.
@@ -31,14 +31,14 @@ namespace Blog.Data
         /// <param name="id">The unique identifier of the article to retrieve. Must be a positive integer.</param>
         /// <returns>The <see cref="Article"/> object if an article with the specified <paramref name="id"/> exists; otherwise,
         /// <see langword="null"/>.</returns>
-        Article? GetById(int id);
+        public  Task<Article?> GetById(int id);
 
         /// <summary>
         /// Writes a new article to the repository.
         /// </summary>
         /// <param name="article">The <see cref="Article"/> to save.</param>
         /// <returns>The created <see cref="Article"/></returns>
-        Article Create(Article article);
+        public Task<Article> Create(Article article);
 
         /// <summary>
         /// Retrieves a collection of comments associated with the specified article.
@@ -46,7 +46,7 @@ namespace Blog.Data
         /// <param name="articleId">The unique identifier of the article for which to retrieve comments. Must be a positive integer.</param>
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="Comment"/> objects representing the comments for the specified
         /// article. Returns an empty collection if no comments are found.</returns>
-        IEnumerable<Comment> GetCommentsByArticleId(int articleId);
+        public  Task<IEnumerable<Comment>> GetCommentsByArticleId(int articleId);
 
         /// <summary>
         /// Adds a new comment to the system.
@@ -56,14 +56,9 @@ namespace Blog.Data
         /// identifier of an existing article in the repository. If it does not, the method should throw an <see cref="ArgumentException"/>.
         /// </remarks>
         /// <param name="comment">The comment to add. This parameter cannot be null.</param>
-        void AddComment(Comment comment);
-        public User CreateUser(User user);
-        public User? GetUserByUsername(string username);
-        public Session? GetSession(string sessionID);
-        public void CreateSession(Session session);
-        public void RemoveSession(string sessionID);
-        public void UpdateSessionActivity(Session session);
-
-        public User? GetUserById(int userID);
+        Task AddComment(Comment comment);
+        public Task<User> CreateUser(User user);
+        public Task<User?> GetUserByUsername(string username);
+        public Task<User?> GetUserById(int userID);
     }
 }

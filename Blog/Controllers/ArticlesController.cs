@@ -17,7 +17,7 @@ namespace Blog.Controllers
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
 
-        public ArticlesController(IArticleRepository articleRepository, UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager) 
+        public ArticlesController(IArticleRepository articleRepository, UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
         {
             _articleRepository = articleRepository;
             _userManager = userManager;
@@ -29,7 +29,7 @@ namespace Blog.Controllers
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
-            return RedirectToAction("Index", "Articles"); 
+            return RedirectToAction("Index", "Articles");
         }
 
         // GET: ArticlesController
@@ -90,7 +90,33 @@ namespace Blog.Controllers
             return RedirectToAction(nameof(Details), new { id = created.Id });
         }
 
+        [Authorize]
+        [HttpGet]
+        public async Task<ActionResult> Update(int id)
+        {
+            var article = await _articleRepository.GetById(id);
+            if (article == null) return NotFound();
+            return View(article);
+        }
 
+        [Authorize]
+        [HttpPost]
+        public async Task<ActionResult> Update(int id, Article updatedArticle)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(updatedArticle);
+            }
+            var existingArticle = await _articleRepository.GetById(id);
+            if (existingArticle == null)
+            {
+                return NotFound();
+            }
+            existingArticle.Title = updatedArticle.Title;
+            existingArticle.Content = updatedArticle.Content;
+            await _articleRepository.Update(existingArticle);
+            return RedirectToAction(nameof(Details), new { id = existingArticle.Id });
+        }
 
 
 

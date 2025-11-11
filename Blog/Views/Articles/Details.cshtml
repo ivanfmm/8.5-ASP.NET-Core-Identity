@@ -1,4 +1,6 @@
 ﻿@model Blog.Models.ArticleDetailsViewModel
+@using Microsoft.AspNetCore.Identity
+@using System.Security.Claims
 
 @{
     ViewData["Title"] = "Details";
@@ -10,12 +12,20 @@
 <div background-color:#000000 padding:30px; margin-bottom:20px;">
 
 	<div style="margin-bottom:10px;">
-		<div style="font-size:12px; color:#e7e9ea;">@Model.Article.AuthorName</div>
+		<div style="display:flex;">
+			<div style="font-size:12px; color:#e7e9ea;">@Model.Article.AuthorName</div>
+			@if (Model.Article.AuthorName == User.Identity.Name)
+			{
+				<a asp-controller="Articles" asp-action="Update" asp-route-id="@Model.Article.Id" class="btn btn-sm ms-2" style="background-color:#1d9bf0; color:#e7e9ea; border-radius:20px; font-size:12px; padding:2px 10px;">Edit</a>
+			}
+		</div>
+		
 		<h2 style="color:#e7e9ea;">@Model.Article.Title</h2>
 		<p style="overflow: hidden; word-wrap: break-word;color:#e7e9ea;">@Model.Article.Content</p>
 
 		<span style="font-size:12px; color:#e7e9ea;">@Model.Article.AuthorEmail</span>
 		<span style="font-size:12px; color:#e7e9ea;">@Model.Article.PublishedDate</span>
+		<div class=" text-end" style="font-size:12px; color:#e7e9ea;">Edited</div>
 	</div>
 	<hr style="background-color:#e7e9ea">
 	<div>

@@ -106,5 +106,11 @@ namespace Blog.Data
         {
             return await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
         }
+
+        public async Task Update(Article article)
+        {
+            _context.Articles.Update(article);
+            await _context.SaveChangesAsync();
+        }
     }
 }

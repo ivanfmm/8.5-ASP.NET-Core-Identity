@@ -61,5 +61,6 @@ namespace Blog.Data
         public Task<IdentityUser?> CreateUser(string username, string email, string password);
         public Task<IdentityUser?> GetUserByUsername(string username);
         public Task<IdentityUser?> GetUserById(string userID);
+        public Task Update(Article article);
     }
 }

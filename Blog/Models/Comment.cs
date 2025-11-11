@@ -23,6 +23,6 @@ namespace Blog.Models
         /// </summary>
         [DataType(DataType.DateTime)]
         [Display(Name = "Published Date")]
-        public DateTimeOffset PublishedDate { get; set; }
+        public DateTime PublishedDate { get; set; }
     }
 }

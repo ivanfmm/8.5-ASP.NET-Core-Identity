@@ -21,7 +21,7 @@ namespace Blog.Data
         /// <param name="endDate">The end of the date range. Only articles published on or before this date will be included.</param>
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="Article"/> objects representing the articles published within
         /// the specified date range. If no articles are found, the collection will be empty.</returns>
-        Task<IEnumerable<Article>> GetByDateRange(DateTimeOffset startDate, DateTimeOffset endDate, int pageNumber, int pageSize);
+        Task<IEnumerable<Article>> GetByDateRange(DateTime startDate, DateTime endDate, int pageNumber, int pageSize);
 
         public Task<int> GetTotalArticles();
 

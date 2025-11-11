@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualBasic;
 using System.Security.Cryptography;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace Blog.Controllers
 {
@@ -22,31 +23,32 @@ namespace Blog.Controllers
         }
 
         // GET: ArticlesController
-        public ActionResult Index(int page = 1)
+        [HttpGet]
+        public async Task<ActionResult> Index(int page = 1)
         {
-            var start =  DateTimeOffset.MinValue;
-            var end = DateTimeOffset.MaxValue;
+            var start = DateTime.MinValue;
+            var end = DateTime.MaxValue;
             int pageSize = 50;
 
-            int totalArticles = _articleRepository.GetTotalArticles();
+            int totalArticles = await _articleRepository.GetTotalArticles();
             int totalPages = (int)Math.Ceiling(totalArticles / (double)pageSize);
 
             ViewBag.CurrentPage = page;
             ViewBag.TotalPages = totalPages;
 
-            return View(_articleRepository.GetByDateRange(start, end, page, pageSize));
+            return View(await _articleRepository.GetByDateRange(start, end, page, pageSize));
         }
 
         // GET: ArticlesController/Details/5
-        public ActionResult Details(int id)
+        public async Task<ActionResult> Details(int id)
         {
-            var article = _articleRepository.GetById(id);
+            var article = await _articleRepository.GetById(id);
             if (article == null)
             {
                 return NotFound();
             }
 
-            var comments = _articleRepository.GetCommentsByArticleId(id);
+            var comments = await _articleRepository.GetCommentsByArticleId(id);
 
             var viewModel = new ArticleDetailsViewModel(article, comments);
             return View(viewModel);
@@ -63,18 +65,18 @@ namespace Blog.Controllers
         // POST: ArticlesController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(Article article)
+        public async Task<ActionResult> Create(Article article)
         {
             if (!ModelState.IsValid)
             {
                 return View(article);
             }
             int sessionUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-            User user = _articleRepository.GetUserById(sessionUserId);
+            User user = await _articleRepository.GetUserById(sessionUserId);
             article.AuthorName = user.Username;
             article.AuthorEmail = user.Email;
-            article.PublishedDate = DateTimeOffset.UtcNow;
-            Article created = _articleRepository.Create(article);
+            article.PublishedDate = DateTime.UtcNow;
+            Article created = await _articleRepository.Create(article);
 
             return RedirectToAction(nameof(Details), new { id = created.Id });
         }
@@ -82,9 +84,9 @@ namespace Blog.Controllers
         [Authorize]
         [HttpPost]
         [Route("Articles/{articleId}/AddComment")]
-        public ActionResult AddComment(int articleId, Comment comment)
+        public async Task<ActionResult> AddComment(int articleId, Comment comment)
         {
-            Article? article = _articleRepository.GetById(articleId);
+            Article? article = await _articleRepository.GetById(articleId);
             if (article == null)
             {
                 return NotFound();
@@ -95,17 +97,17 @@ namespace Blog.Controllers
             }
 
             comment.ArticleId = articleId;
-            comment.PublishedDate = DateTimeOffset.UtcNow;
-            _articleRepository.AddComment(comment);
+            comment.PublishedDate = DateTime.UtcNow;
+            await _articleRepository.AddComment(comment);
 
             return RedirectToAction(nameof(Details), new { id = articleId });
         }
 
         [Authorize]
-        public ActionResult Profile()
+        public async Task<ActionResult> Profile()
         {
             int sessionUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-            var user = _articleRepository.GetUserById(sessionUserId);
+            var user = await _articleRepository.GetUserById(sessionUserId);
             if (user == null)
             {
                 return RedirectToAction("Method");

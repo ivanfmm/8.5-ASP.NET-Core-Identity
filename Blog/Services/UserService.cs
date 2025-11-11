@@ -16,14 +16,14 @@ namespace Blog.Services
             _articleRepository = articleRepository;
         }
 
-        public User RegisterUser(User user)
+        public async Task<User> RegisterUser(User user)
         {
             byte[] salt = GetSalt();
             string hashedPassword = HashPassword(user.Password, salt);
             user.Password = hashedPassword;
             user.Salt = salt;
             //Console.WriteLine("se creo la sal y la contraseña");
-            return _articleRepository.CreateUser(user);
+            return await _articleRepository.CreateUser(user);
         }
         public byte[] GetSalt()
         {
@@ -48,9 +48,9 @@ namespace Blog.Services
             return hashed;
         }
 
-        public User? VerifyPassword(LoginUser enteredUser)
+        public async Task<User?> VerifyPassword(LoginUser enteredUser)
         {
-            User? user = _articleRepository.GetUserByUsername(enteredUser.Username);
+            User? user = await _articleRepository.GetUserByUsername(enteredUser.Username);
             if (user == null)
             {
                 return null;

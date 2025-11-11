@@ -29,7 +29,7 @@ namespace Blog.Models
 
         [Display(Name = "Published Date")]
         [DataType(DataType.DateTime)]
-        public DateTimeOffset PublishedDate { get; internal set; }
+        public DateTime PublishedDate { get; internal set; }
         public bool edit { get; internal set; }  
     }
 }

@@ -6,9 +6,9 @@ namespace Blog.Services
 {
     public interface IUserService
     {
-        public User RegisterUser(User user);
+        public Task<User?> RegisterUser(User user);
         public string HashPassword(string password, byte[] salt);
-        public User? VerifyPassword(LoginUser enteredUser);
+        public Task<User?> VerifyPassword(LoginUser enteredUser);
         public byte[] GetSalt();
     }
 }

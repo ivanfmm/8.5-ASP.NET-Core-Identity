@@ -33,14 +33,15 @@ namespace Blog.Data
             return await _context.Articles.CountAsync();
         }
 
-        public async Task<IEnumerable<Article>> GetByDateRange(DateTimeOffset startDate, DateTimeOffset endDate, int pageNumber, int pageSize)
+        public async Task<IEnumerable<Article>> GetByDateRange(DateTime startDate, DateTime endDate, int pageNumber, int pageSize)
         {
             return await _context.Articles
-                .Where(a => a.PublishedDate >= startDate && a.PublishedDate <= endDate)
-                .OrderByDescending(a => a.PublishedDate)
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
+                    .Where(a => a.PublishedDate >= startDate
+                             && a.PublishedDate <= endDate)
+                    .OrderByDescending(a => a.PublishedDate)
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToListAsync();
         }
 
         public async Task<Article?> GetById(int id)

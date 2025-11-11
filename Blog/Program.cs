@@ -13,9 +13,9 @@ namespace Blog
 
 
 
-            //var databaseConfig = builder.Configuration.GetSection("DatabaseConfig").Get<DatabaseConfig>();
-            builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+            var databaseConfig = builder.Configuration.GetSection("DatabaseConfig").Get<DatabaseConfig>();
+            builder.Services.AddDbContext<ArticleContext>(options => options.UseSqlite(databaseConfig.DefaultConnectionString));
+
             //agregamos Identity
             builder.Services.AddDefaultIdentity<IdentityUser>(options =>
             {
@@ -25,19 +25,12 @@ namespace Blog
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequiredLength = 6;
             })
-        .AddEntityFrameworkStores<ApplicationDbContext>();
+        .AddEntityFrameworkStores<ArticleContext>();
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
-            builder.Services.AddScoped<IArticleRepository>(provider =>
-            {
-                var config = provider.GetRequiredService<IConfiguration>();
-                var repository = new ArticleRepository(databaseConfig);
-                repository.EnsureCreated();
-
-                return repository;
-            });
+            builder.Services.AddScoped<IArticleRepository, ArticleRepository>();
             builder.Services.AddScoped<IUserService, UserService>();
 
             var app = builder.Build();

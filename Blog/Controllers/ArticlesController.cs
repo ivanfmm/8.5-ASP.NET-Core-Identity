@@ -90,6 +90,10 @@ namespace Blog.Controllers
             return RedirectToAction(nameof(Details), new { id = created.Id });
         }
 
+
+
+
+
         [Authorize]
         [HttpPost]
         [Route("Articles/{articleId}/AddComment")]

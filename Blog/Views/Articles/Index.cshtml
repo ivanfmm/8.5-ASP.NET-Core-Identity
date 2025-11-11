@@ -17,6 +17,8 @@
         <a asp-controller="Articles" asp-action="Details" asp-route-id="@article.Id" class="list-group-item"
            style=" align-items:center; justify-content:center; border:solid #e7e9ea 1px;">
             <h5 style="color:#e7e9ea">@article.Title</h5>
+            <div style="color:#e7e9ea">@article.Content</div>
+            <br/>
             <div style="color:#e7e9ea">@article.AuthorName</div>
             <small style="color:#e7e9ea">Published:@article.PublishedDate</small>
         </a>

@@ -7,6 +7,15 @@
 }
 
 <h1 style="color:#e7e9ea;">Details</h1>
+@if (TempData["Error"] != null)
+{
+	<script>
+		alert('@TempData["Error"]');
+	</script>
+}
+
+<br />
+<div background-color:#000000 padding:30px; margin-bottom:20px;">
 <br />
 
 <div background-color:#000000 padding:30px; margin-bottom:20px;">
@@ -14,7 +23,7 @@
 	<div style="margin-bottom:10px;">
 		<div style="display:flex;">
 			<div style="font-size:12px; color:#e7e9ea;">@Model.Article.AuthorName</div>
-			@if (Model.Article.AuthorName == User.Identity.Name || DateTime.Now > Model.Article.PublishedDate.AddMinutes(5))
+			@if (Model.Article.AuthorName == User.Identity.Name && DateTime.Now <= Model.Article.PublishedDate.AddMinutes(5))
 			{
 				<a asp-controller="Articles" asp-action="Update" asp-route-id="@Model.Article.Id" class="btn btn-sm ms-2" style="background-color:#1d9bf0; color:#e7e9ea; border-radius:20px; font-size:12px; padding:2px 10px;">Edit</a>
 			}

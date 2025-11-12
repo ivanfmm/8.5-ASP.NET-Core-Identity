@@ -91,49 +91,50 @@ namespace Blog.Controllers
             return RedirectToAction(nameof(Details), new { id = created.Id });
         }
 
-        [Authorize]
-        [HttpGet]
-        public async Task<ActionResult> Update(int id)
-        {
-            var article = await _articleRepository.GetById(id);
-            if (article == null) return NotFound();
-            return View(article);
-        }
+		[Authorize]
+		[HttpGet]
+		public async Task<ActionResult> Update(int id)
+		{
+			var article = await _articleRepository.GetById(id);
+			if (article == null) return NotFound();
 
-        [Authorize]
-        [HttpPost]
-        public async Task<ActionResult> Update(int id, Article updatedArticle)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View(updatedArticle);
-            }
-            var existingArticle = await _articleRepository.GetById(id);
-            if (existingArticle == null)
-            {
-                return NotFound();
-            }
-            var userId = User.FindFirstValue(ClaimTypes.Name);
-            if (existingArticle.AuthorName != userId)
-            {
-                return Forbid();
-            }
+			if (DateTime.UtcNow > article.PublishedDate.AddMinutes(5))
+			{
+				TempData["Error"] = "El limite de 5 minutos para editar ha expirado";
+				return RedirectToAction(nameof(Details), new { id = article.Id });
+			}
 
-            if (DateTime.Now > existingArticle.PublishedDate.AddMinutes(5))
-            {
-                return RedirectToAction(nameof(Details), new { id = existingArticle.Id });
-            }
+			return View(article);
+		}
+		[Authorize]
+		[HttpPost]
+		public async Task<ActionResult> Update(int id, Article updatedArticle)
+		{
+			if (!ModelState.IsValid)
+			{
+				return View(updatedArticle);
+			}
+			var existingArticle = await _articleRepository.GetById(id);
+			if (existingArticle == null)
+			{
+				return NotFound();
+			}
+			var userId = User.FindFirstValue(ClaimTypes.Name);
+			if (existingArticle.AuthorName != userId)
+			{
+				return Forbid();
+			}
 
-            existingArticle.Title = updatedArticle.Title;
-            existingArticle.Content = updatedArticle.Content;
-            existingArticle.edit = true;
-            await _articleRepository.Update(existingArticle);
-            return RedirectToAction(nameof(Details), new { id = existingArticle.Id });
-        }
+			existingArticle.Title = updatedArticle.Title;
+			existingArticle.Content = updatedArticle.Content;
+			existingArticle.edit = true;
+			await _articleRepository.Update(existingArticle);
+			return RedirectToAction(nameof(Details), new { id = existingArticle.Id });
+		}
 
 
 
-        [Authorize]
+		[Authorize]
         [HttpPost]
         [Route("Articles/{articleId}/AddComment")]
         public async Task<ActionResult> AddComment(int articleId, Comment comment)
